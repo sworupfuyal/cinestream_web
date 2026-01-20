@@ -1,5 +1,6 @@
 import LoginForm from "../_components/LoginForm";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function LoginPage() {
   return (
@@ -32,9 +33,11 @@ export default function LoginPage() {
         {/* Signup */}
         <p className="text-center text-sm mt-6 text-gray-400">
           New to CineStream?{" "}
+          <Link href="/signup">
           <span className="text-blue-400 font-medium cursor-pointer hover:underline">
             Create an account
           </span>
+          </Link>
         </p>
       </div>
     </div>
