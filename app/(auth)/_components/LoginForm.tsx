@@ -2,12 +2,22 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, LoginType } from "../schema";
 import { useRouter } from "next/navigation";
-import { Film } from "lucide-react";
+import { handleLogin } from "@/lib/actions/auth-action";
+import { useState, useTransition } from "react";
+import z from "zod";
+
+export const loginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+});
+
+export type LoginType = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState("");
 
   const {
     register,
@@ -18,23 +28,31 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (data: LoginType) => {
-    console.log("CineStream Login:", data);
-    router.push("/dashboard");
+    setError("");
+    try {
+      const result = await handleLogin(data);
+      
+      if (!result.success) {
+        setError(result.message);
+        return;
+      }
+
+      // Use startTransition for navigation
+      startTransition(() => {
+        router.push("/dashboard");
+      });
+    } catch (e: any) {
+      setError(e.message || "An unexpected error occurred");
+    }
   };
 
   return (
-    <div className="bg-blue p-8 rounded-2xl shadow-2xl space-y-6">
-      {/* Branding */}
-      <div className="flex items-center gap-2">
-        <Film className="text-blue-500" size={26} />
-        <h1 className="text-2xl font-semibold text-white">
-          Cine<span className="text-blue">Stream</span>
-        </h1>
-      </div>
-
-      <p className="text-sm text-gray-400">
-        Sign in to continue watching your favorite movies
-      </p>
+    <div className="w-full max-w-lg mx-auto bg-slate-950 p-8 rounded-2xl shadow-2xl space-y-6">
+      {error && (
+        <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-lg text-sm">
+          {error}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Email */}
@@ -49,7 +67,7 @@ export default function LoginForm() {
             className="
               w-full
               rounded-lg
-              bg-[#020617]
+              bg-slate-950
               border border-gray-700
               px-4 py-3
               text-sm
@@ -62,7 +80,7 @@ export default function LoginForm() {
             "
           />
           {errors.email && (
-            <p className="text-xs text-blue-400 mt-1">
+            <p className="text-xs text-red-400 mt-1">
               {errors.email.message}
             </p>
           )}
@@ -80,7 +98,7 @@ export default function LoginForm() {
             className="
               w-full
               rounded-lg
-              bg-blue
+              bg-slate-950
               border border-gray-700
               px-4 py-3
               text-sm
@@ -93,7 +111,7 @@ export default function LoginForm() {
             "
           />
           {errors.password && (
-            <p className="text-xs text-blue-400 mt-1">
+            <p className="text-xs text-red-400 mt-1">
               {errors.password.message}
             </p>
           )}
@@ -101,14 +119,18 @@ export default function LoginForm() {
 
         {/* Forgot Password */}
         <div className="text-right">
-          <span className="text-sm text-blue-400 hover:underline cursor-pointer">
+          <span 
+            onClick={() => router.push("/forgot-password")}
+            className="text-sm text-blue-400 hover:underline cursor-pointer"
+          >
             Forgot password?
           </span>
         </div>
 
         {/* Button */}
         <button
-          disabled={isSubmitting}
+          disabled={isSubmitting || pending}
+          type="submit"
           className="
             w-full
             bg-blue-600
@@ -122,17 +144,9 @@ export default function LoginForm() {
             transition
           "
         >
-          {isSubmitting ? "Signing you in..." : "Sign In"}
+          {isSubmitting || pending ? "Signing you in..." : "Sign In"}
         </button>
       </form>
-
-      {/* Footer */}
-      <p className="text-sm text-gray-400 text-center">
-        New to CineStream?{" "}
-        <span className="text-blue-400 hover:underline cursor-pointer">
-          Create an account
-        </span>
-      </p>
     </div>
   );
 }
