@@ -2,10 +2,26 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signupSchema, SignupType } from "../schema";
-import { Film } from "lucide-react";
+import { handleRegister } from "@/lib/actions/auth-action";
+import z from "zod";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+
+export const signupSchema = z.object({
+  fullName: z.string().min(1, { message: "Full name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  confirmPassword: z.string().min(6, { message: "Confirm password is required" })
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"]
+});
+
+export type SignupType = z.infer<typeof signupSchema>;
 
 export default function SignupForm() {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
   const {
     register,
     handleSubmit,
@@ -13,24 +29,37 @@ export default function SignupForm() {
   } = useForm<SignupType>({
     resolver: zodResolver(signupSchema),
   });
+  const [error, setError] = useState("");
 
   const onSubmit = async (data: SignupType) => {
-    console.log("CineStream Signup:", data);
+    setError("");
+    try {
+      console.log("Form data being sent:", data);
+      const result = await handleRegister(data);
+      console.log("Server response:", result);
+
+      if (!result || !result.success) {
+        setError(result?.message || "Registration failed. Please try again.");
+        return;
+      }
+
+      // Use startTransition for navigation
+      startTransition(() => {
+        router.push("/login");
+      });
+    } catch (e: any) {
+      console.error("Registration error:", e);
+      setError(e.message || "An unexpected error occurred");
+    }
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-[#020617] rounded-2xl shadow-2xl p-8 space-y-6">
-      {/* Header / Branding */}
-      <div className="flex items-center gap-2">
-        <Film className="text-blue-500" size={28} />
-        <h1 className="text-2xl font-semibold text-white">
-          Create your <span className="text-blue-500">CineStream</span> account
-        </h1>
-      </div>
-
-      <p className="text-sm text-gray-400">
-        Join CineStream and start watching unlimited movies and shows.
-      </p>
+    <div className="w-full max-w-lg mx-auto bg-slate-950 rounded-2xl shadow-2xl p-8 space-y-6">
+      {error && (
+        <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-lg text-sm">
+          {error}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Full Name */}
@@ -44,7 +73,7 @@ export default function SignupForm() {
             className="
               w-full
               rounded-lg
-              bg-[#020617]
+              bg-slate-950
               border border-gray-700
               px-4 py-3
               text-sm
@@ -57,7 +86,7 @@ export default function SignupForm() {
             "
           />
           {errors.fullName && (
-            <p className="text-xs text-blue-400 mt-1">
+            <p className="text-xs text-red-400 mt-1">
               {errors.fullName.message}
             </p>
           )}
@@ -75,7 +104,7 @@ export default function SignupForm() {
             className="
               w-full
               rounded-lg
-              bg-[#020617]
+              bg-slate-950
               border border-gray-700
               px-4 py-3
               text-sm
@@ -88,7 +117,7 @@ export default function SignupForm() {
             "
           />
           {errors.email && (
-            <p className="text-xs text-blue-400 mt-1">
+            <p className="text-xs text-red-400 mt-1">
               {errors.email.message}
             </p>
           )}
@@ -106,7 +135,7 @@ export default function SignupForm() {
             className="
               w-full
               rounded-lg
-              bg-[#020617]
+              bg-slate-950
               border border-gray-700
               px-4 py-3
               text-sm
@@ -119,7 +148,7 @@ export default function SignupForm() {
             "
           />
           {errors.password && (
-            <p className="text-xs text-blue-400 mt-1">
+            <p className="text-xs text-red-400 mt-1">
               {errors.password.message}
             </p>
           )}
@@ -137,7 +166,7 @@ export default function SignupForm() {
             className="
               w-full
               rounded-lg
-              bg-[#020617]
+              bg-slate-950
               border border-gray-700
               px-4 py-3
               text-sm
@@ -150,7 +179,7 @@ export default function SignupForm() {
             "
           />
           {errors.confirmPassword && (
-            <p className="text-xs text-blue-400 mt-1">
+            <p className="text-xs text-red-400 mt-1">
               {errors.confirmPassword.message}
             </p>
           )}
@@ -158,7 +187,8 @@ export default function SignupForm() {
 
         {/* Submit Button */}
         <button
-          disabled={isSubmitting}
+          disabled={isSubmitting || pending}
+          type="submit"
           className="
             w-full
             bg-blue-600
@@ -172,17 +202,9 @@ export default function SignupForm() {
             transition
           "
         >
-          {isSubmitting ? "Creating your account..." : "Create Account"}
+          {isSubmitting || pending ? "Creating your account..." : "Create Account"}
         </button>
       </form>
-
-      {/* Footer */}
-      <p className="text-sm text-gray-400 text-center">
-        Already have an account?{" "}
-        <span className="text-blue-400 hover:underline cursor-pointer">
-          Sign in
-        </span>
-      </p>
     </div>
   );
 }
