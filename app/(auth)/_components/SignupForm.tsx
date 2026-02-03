@@ -8,7 +8,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 export const signupSchema = z.object({
-  fullName: z.string().min(1, { message: "Full name is required" }),
+  fullname: z.string().min(1, { message: "Full name is required" }),
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
   confirmPassword: z.string().min(6, { message: "Confirm password is required" })
@@ -68,7 +68,7 @@ export default function SignupForm() {
             Full Name
           </label>
           <input
-            {...register("fullName")}
+            {...register("fullname")}
             placeholder="John Doe"
             className="
               w-full
@@ -85,9 +85,9 @@ export default function SignupForm() {
               focus:border-blue-500
             "
           />
-          {errors.fullName && (
+          {errors.fullname && (
             <p className="text-xs text-red-400 mt-1">
-              {errors.fullName.message}
+              {errors.fullname.message}
             </p>
           )}
         </div>

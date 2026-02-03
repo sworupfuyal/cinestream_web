@@ -29,21 +29,29 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginType) => {
     setError("");
-    try {
-      const result = await handleLogin(data);
-      
-      if (!result.success) {
-        setError(result.message);
-        return;
-      }
+    
+    startTransition(async () => {
+      try {
+        const result = await handleLogin(data);
+        
+        if (!result.success) {
+          setError(result.message);
+          return;
+        }
 
-      // Use startTransition for navigation
-      startTransition(() => {
-        router.push("/dashboard");
-      });
-    } catch (e: any) {
-      setError(e.message || "An unexpected error occurred");
-    }
+        // Role-based redirection
+        if (result.data?.role === 'admin') {
+          router.replace("/admin");
+        } else if (result.data?.role === 'user') {
+          router.replace("/user/dashboard");
+        } else {
+          // Fallback for any other role or no role
+          router.replace("/dashboard");
+        }
+      } catch (e: any) {
+        setError(e.message || "An unexpected error occurred");
+      }
+    });
   };
 
   return (

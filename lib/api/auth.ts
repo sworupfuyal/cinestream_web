@@ -1,55 +1,52 @@
-//AUTHENTICATION API CALL
-import axios from "./axios"; //IMPORTANT
-import {API} from "./endpoints";
+import { LoginType, SignupType } from "@/app/(auth)/schema"
+import axios from "./axios"
+import { API } from "./endpoints"
 
-//registrationData: any -> can be RegistrationType from schema
 
-export const register = async (registrationData: any) => {
+export const register = async (registerData: SignupType) => {
     try {
-        // Backend validation expects confirmPassword even though it doesn't use it
-        // So we send it to match backend schema
-        const backendData = {
-            fullname: registrationData.fullName,
-            email: registrationData.email,
-            password: registrationData.password,
-            confirmPassword: registrationData.confirmPassword
-        };
-        
-        const response = await axios.post(API.AUTH.REGISTER, backendData);
-        // Return success response with consistent structure
-        return {
-            success: true,
-            message: response.data.message || "Registration successful",
-            data: response.data.data || response.data
-        };
-    } catch (err: any) {
-        // Return error object instead of throwing
-        return {
-            success: false,
-            message: err.response?.data?.message 
-                || err.message 
-                || 'Registration Failed'
-        };
+        const response = await axios.post(API.AUTH.REGISTER, registerData)
+        return response.data
+    } catch (error: Error | any) {
+        throw new Error(error.response?.data?.message || error.message || 'Registration failed')
     }
 }
 
-export const login = async (loginData: any) => {
+export const login = async (loginData: LoginType) => {
     try {
-        const response = await axios.post(API.AUTH.LOGIN, loginData);
-        // Return success response with consistent structure
-        return {
-            success: true,
-            message: response.data.message || "Login successful",
-            token: response.data.token,
-            data: response.data.data || response.data.user || response.data
-        };
-    } catch (err: any) {
-        // Return error object instead of throwing
-        return {
-            success: false,
-            message: err.response?.data?.message 
-                || err.message 
-                || 'Login Failed'
-        };
+        const response = await axios.post(API.AUTH.LOGIN, loginData)
+        return response.data
+    } catch (error: Error | any) {
+        throw new Error(error.response?.data?.message || error.message || 'Login failed')
     }
+}
+
+
+
+export const whoAmI = async () => {
+  try {
+    const response = await axios.get(API.AUTH.WHOAMI);
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(error.response?.data?.message
+      || error.message || 'Whoami failed');
+  }
+}
+
+export const updateProfile = async (profileData: any) => {
+  try {
+    const response = await axios.put(
+      API.AUTH.UPDATEPROFILE,
+      profileData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data', // for file upload/multer
+        }
+      }
+    );
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(error.response?.data?.message
+      || error.message || 'Update profile failed');
+  }
 }
