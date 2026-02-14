@@ -113,7 +113,7 @@ export default function ContactSection() {
               <textarea
                 rows={4}
                 placeholder="Your Message"
-                className="w-full px-5 py-3 bg-black border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full px-5 py-3 bg-black border  border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               />
               <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition">
                 Send Message
