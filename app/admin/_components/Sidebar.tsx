@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const ADMIN_LINKS = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/users", label: "Users" },
+  { href: "/admin/movies", label: "Movies" },  // ← Add this line
 ];
 
 export default function Sidebar() {
@@ -45,6 +46,7 @@ export default function Sidebar() {
           </span>
         </Link>
       </div>
+      
 
       {/* Navigation */}
       <nav className="p-3 space-y-1">
