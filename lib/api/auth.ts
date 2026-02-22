@@ -33,14 +33,15 @@ export const whoAmI = async () => {
   }
 }
 
-export const updateProfile = async (profileData: any) => {
+export const updateProfile = async (profileData: any, token: string) => {
   try {
     const response = await axios.put(
       API.AUTH.UPDATEPROFILE,
       profileData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data', // for file upload/multer
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`, // Explicitly pass token
         }
       }
     );
@@ -68,6 +69,3 @@ export const resetPassword = async (token: string, newPassword: string) => {
         throw new Error(error.response?.data?.message || error.message || 'Reset password failed');
     }
 }
-
-
-

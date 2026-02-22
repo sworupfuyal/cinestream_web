@@ -1,12 +1,19 @@
-import Header from "./_compoents/Header";
+import UserSidebar from "./_compoents/UserSidebar";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-    return (
-        <section>
-            <Header />
-            <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                {children}
-            </main>
-        </section>
-    );
+export default function UserLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex h-screen bg-slate-950">
+      {/* Sidebar */}
+      <UserSidebar />
+      
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        {children}
+      </main>
+    </div>
+  );
 }

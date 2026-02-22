@@ -8,14 +8,23 @@ const axiosInstance = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
+    withCredentials: true, // Important: This sends cookies with requests
 });
 
 axiosInstance.interceptors.request.use(
     async (config) => {
-        const token = await getAuthToken();
-        if (token) {
-            config.headers["Authorization"] = `Bearer ${token}`;
+        // Only try to get token on server-side
+        if (typeof window === 'undefined') {
+            try {
+                const token = await getAuthToken();
+                if (token) {
+                    config.headers["Authorization"] = `Bearer ${token}`;
+                }
+            } catch (error) {
+                console.error('Failed to get auth token:', error);
+            }
         }
+        // On client-side, cookies are automatically sent via withCredentials
         return config;
     },
     (error) => {

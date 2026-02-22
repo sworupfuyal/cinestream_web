@@ -1,4 +1,5 @@
-// ALL API ENDPOINTS
+// Update your existing endpoints.ts file to include these:
+
 export const API = {
    AUTH: {
         LOGIN: '/api/auth/login',
@@ -14,6 +15,29 @@ export const API = {
             LIST: '/api/admin/users',
             DELETE: '/api/admin/users',
             UPDATE: '/api/admin/users',
+        },
+        MOVIES: {
+            CREATE: '/api/admin/movies',
+            LIST: '/api/admin/movies',
+            GET: (id: string) => `/api/admin/movies/${id}`,
+            UPDATE: (id: string) => `/api/admin/movies/${id}`,
+            DELETE: (id: string) => `/api/admin/movies/${id}`,
+            GENRES: '/api/admin/movies/genres/list',
+        },
+    },
+    USER: {
+        LISTS: {
+            ADD: '/api/user/lists',
+            GET: '/api/user/lists',
+            REMOVE: (movieId: string, listType: string) => `/api/user/lists/${movieId}/${listType}`,
+            STATUS: '/api/user/lists/status',
+            COUNTS: '/api/user/lists/counts',
+        },
+    },
+    PUBLIC: {
+        MOVIES: {
+            LIST: '/api/movies',
+            GET: (id: string) => `/api/movies/${id}`,
         },
     },
 } as const;

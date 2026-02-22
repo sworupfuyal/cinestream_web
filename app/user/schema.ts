@@ -14,14 +14,6 @@ export const updateUserSchema = z.object({
     .string()
     .email({ message: "Enter a valid email address" }),
   
-  username: z
-    .string()
-    .min(3, { message: "Username must be at least 3 characters" })
-    .max(20, { message: "Username must not exceed 20 characters" })
-    .regex(/^[a-zA-Z0-9_]+$/, { 
-      message: "Username can only contain letters, numbers, and underscores" 
-    }),
-  
   profile_image: z
     .instanceof(File)
     .optional()
@@ -36,20 +28,3 @@ export const updateUserSchema = z.object({
 });
 
 export type UpdateUserData = z.infer<typeof updateUserSchema>;
-
-
-export const forgetPasswordSchema = z.object({
-    email: z.email({ message: "Enter a valid email" }),
-});
-export type ForgetPasswordData = z.infer<typeof forgetPasswordSchema>;
-
-
-export const resetPasswordSchema = z.object({
-    newPassword: z.string().min(6, { message: "Minimum 6 characters" }),
-    confirmNewPassword: z.string().min(6, { message: "Minimum 6 characters" }),
-}).refine((v) => v.newPassword === v.confirmNewPassword, {
-    path: ["confirmNewPassword"],
-    message: "Passwords do not match",
-});
-
-export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
