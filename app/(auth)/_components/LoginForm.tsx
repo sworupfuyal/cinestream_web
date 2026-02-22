@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { handleLogin } from "@/lib/actions/auth-action";
 import { useState, useTransition } from "react";
+import { useAuth } from "@/context/AuthContext"; // ✅ ADD THIS
 import z from "zod";
 
 export const loginSchema = z.object({
@@ -16,6 +17,7 @@ export type LoginType = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const router = useRouter();
+  const { checkAuth } = useAuth(); // ✅ ADD THIS
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState("");
 
@@ -38,6 +40,9 @@ export default function LoginForm() {
           setError(result.message);
           return;
         }
+
+        // ✅ CRITICAL: Refresh auth context with new user data
+        await checkAuth();
 
         // Role-based redirection
         if (result.data?.role === 'admin') {
