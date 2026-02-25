@@ -38,28 +38,35 @@ export default function MovieList() {
         router.push(`${pathname}?${params.toString()}`);
     };
 
-    const fetchMovies = async () => {
-        setLoading(true);
-        try {
-            const response = await handleGetAllMovies({
-                page,
-                limit: 12,
-                search: search || undefined,
-            });
+   const fetchMovies = async () => {
+    setLoading(true);
+    try {
+        const response = await handleGetAllMovies({
+            page,
+            limit: 12,
+            search: search || undefined,
+        });
 
-            if (response.success) {
-                setMovies(response.data);
-                setTotalPages(response.pagination?.totalPages || 1);
-            } else {
-                toast.error(response.message);
+        if (response.success) {
+            const total = response.pagination?.totalPages || 1;
+
+            // Redirect to last valid page if out of range
+            if (page > total) {
+                updateURL(total, search);
+                return;
             }
-        } catch (error: any) {
-            toast.error("Failed to load movies");
-        } finally {
-            setLoading(false);
-        }
-    };
 
+            setMovies(response.data);
+            setTotalPages(total);
+        } else {
+            toast.error(response.message);
+        }
+    } catch (error: any) {
+        toast.error("Failed to load movies");
+    } finally {
+        setLoading(false);
+    }
+};
     // Fetch whenever URL params change
     useEffect(() => {
         setSearchInput(search); // keep input in sync if user navigates back/forward

@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { handleGetAllMovies, handleAddToList, handleRemoveFromList, handleGetListStatus } from "@/lib/actions/user-list-actions";
 import { toast } from "react-toastify";
 import MovieCard from "../_compoents/MovieCard";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+
 interface Movie {
     _id: string;
     title: string;
@@ -22,119 +24,105 @@ interface ListStatus {
 }
 
 export default function UserDashboard() {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const page = Number(searchParams.get("page") || "1");
+    const search = searchParams.get("search") || "";
+    const [searchInput, setSearchInput] = useState(search);
+
     const [movies, setMovies] = useState<Movie[]>([]);
     const [listStatus, setListStatus] = useState<ListStatus>({});
     const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [search, setSearch] = useState("");
 
-    const fetchMovies = async () => {
-        setLoading(true);
-        try {
-            const response = await handleGetAllMovies({
-                page,
-                limit: 12,
-                search: search || undefined,
-            });
-
-            if (response.success) {
-                setMovies(response.data);
-                setTotalPages(response.pagination?.totalPages || 1);
-
-                // Fetch list status for these movies
-                const movieIds = response.data.map((m: Movie) => m._id);
-                if (movieIds.length > 0) {
-                    const statusResponse = await handleGetListStatus(movieIds);
-                    if (statusResponse.success) {
-                        setListStatus(statusResponse.data);
-                    }
-                }
-            } else {
-                toast.error(response.message);
-            }
-        } catch (error: any) {
-            toast.error("Failed to load movies");
-        } finally {
-            setLoading(false);
-        }
+    const updateURL = (newPage: number, newSearch: string) => {
+        const params = new URLSearchParams();
+        if (newPage > 1) params.set("page", String(newPage));
+        if (newSearch) params.set("search", newSearch);
+        router.push(`${pathname}?${params.toString()}`);
     };
 
+   const fetchMovies = async () => {
+    setLoading(true);
+    try {
+        const response = await handleGetAllMovies({
+            page,
+            limit: 12,
+            search: search || undefined,
+        });
+
+        if (response.success) {
+            const total = response.pagination?.totalPages || 1;
+
+            // Redirect to last valid page if out of range
+            if (page > total) {
+                updateURL(total, search);
+                return;
+            }
+
+            setMovies(response.data);
+            setTotalPages(total);
+
+            const movieIds = response.data.map((m: Movie) => m._id);
+            if (movieIds.length > 0) {
+                const statusResponse = await handleGetListStatus(movieIds);
+                if (statusResponse.success) {
+                    setListStatus(statusResponse.data);
+                }
+            }
+        } else {
+            toast.error(response.message);
+        }
+    } catch (error: any) {
+        toast.error("Failed to load movies");
+    } finally {
+        setLoading(false);
+    }
+};
+
     useEffect(() => {
+        setSearchInput(search); // keep input in sync on back/forward navigation
         fetchMovies();
-    }, [page]);
+    }, [page, search]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        setPage(1);
-        fetchMovies();
+        updateURL(1, searchInput); // reset to page 1 on new search
     };
 
     const handleToggleFavorite = async (movieId: string) => {
         const currentStatus = listStatus[movieId]?.isFavorite || false;
+        const response = currentStatus
+            ? await handleRemoveFromList(movieId, 'favorite')
+            : await handleAddToList(movieId, 'favorite');
 
-        if (currentStatus) {
-            const response = await handleRemoveFromList(movieId, 'favorite');
-            if (response.success) {
-                toast.success(response.message);
-                setListStatus(prev => ({
-                    ...prev,
-                    [movieId]: {
-                        ...prev[movieId],
-                        isFavorite: false
-                    }
-                }));
-            } else {
-                toast.error(response.message);
-            }
+        if (response.success) {
+            toast.success(response.message);
+            setListStatus(prev => ({
+                ...prev,
+                [movieId]: { ...prev[movieId], isFavorite: !currentStatus }
+            }));
         } else {
-            const response = await handleAddToList(movieId, 'favorite');
-            if (response.success) {
-                toast.success(response.message);
-                setListStatus(prev => ({
-                    ...prev,
-                    [movieId]: {
-                        ...prev[movieId],
-                        isFavorite: true
-                    }
-                }));
-            } else {
-                toast.error(response.message);
-            }
+            toast.error(response.message);
         }
     };
 
     const handleToggleWatchLater = async (movieId: string) => {
         const currentStatus = listStatus[movieId]?.isWatchLater || false;
+        const response = currentStatus
+            ? await handleRemoveFromList(movieId, 'watchlater')
+            : await handleAddToList(movieId, 'watchlater');
 
-        if (currentStatus) {
-            const response = await handleRemoveFromList(movieId, 'watchlater');
-            if (response.success) {
-                toast.success(response.message);
-                setListStatus(prev => ({
-                    ...prev,
-                    [movieId]: {
-                        ...prev[movieId],
-                        isWatchLater: false
-                    }
-                }));
-            } else {
-                toast.error(response.message);
-            }
+        if (response.success) {
+            toast.success(response.message);
+            setListStatus(prev => ({
+                ...prev,
+                [movieId]: { ...prev[movieId], isWatchLater: !currentStatus }
+            }));
         } else {
-            const response = await handleAddToList(movieId, 'watchlater');
-            if (response.success) {
-                toast.success(response.message);
-                setListStatus(prev => ({
-                    ...prev,
-                    [movieId]: {
-                        ...prev[movieId],
-                        isWatchLater: true
-                    }
-                }));
-            } else {
-                toast.error(response.message);
-            }
+            toast.error(response.message);
         }
     };
 
@@ -152,8 +140,8 @@ export default function UserDashboard() {
                     <form onSubmit={handleSearch} className="flex gap-3">
                         <input
                             type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
                             placeholder="Search movies..."
                             className="flex-1 rounded-lg bg-slate-800 border border-gray-700 px-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -198,7 +186,7 @@ export default function UserDashboard() {
                 {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-2">
                         <button
-                            onClick={() => setPage(p => Math.max(1, p - 1))}
+                            onClick={() => updateURL(page - 1, search)}
                             disabled={page === 1}
                             className="px-4 py-2 bg-slate-800 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-700 transition"
                         >
@@ -208,7 +196,7 @@ export default function UserDashboard() {
                             Page {page} of {totalPages}
                         </span>
                         <button
-                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                            onClick={() => updateURL(page + 1, search)}
                             disabled={page === totalPages}
                             className="px-4 py-2 bg-slate-800 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-700 transition"
                         >
