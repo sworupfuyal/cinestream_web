@@ -7,3 +7,4 @@ export default function MoviesPage() {
         </div>
     );
 }
+export const dynamic = "force-dynamic";
