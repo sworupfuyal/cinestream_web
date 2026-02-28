@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "@/lib/constants";
+import ReviewSection from "../../_compoents/ReviewSection";
 
 interface Movie {
     _id: string;
@@ -37,7 +38,6 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
 
     const isHLS = videoSrc?.includes('.m3u8');
 
-    // Initialize HLS player when video shows
     useEffect(() => {
         if (!showPlayer || !videoSrc || !videoRef.current) return;
 
@@ -46,36 +46,23 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
         setError(null);
 
         if (isHLS) {
-            // Dynamically import hls.js only when needed
             import('hls.js').then(({ default: Hls }) => {
                 if (Hls.isSupported()) {
-                    const hls = new Hls({
-                        enableWorker: true,
-                        lowLatencyMode: false,
-                    });
-
+                    const hls = new Hls({ enableWorker: true, lowLatencyMode: false });
                     hls.loadSource(videoSrc);
                     hls.attachMedia(video);
-
                     hls.on(Hls.Events.MANIFEST_PARSED, () => {
                         setIsLoading(false);
                         video.play().catch(console.error);
                     });
-
                     hls.on(Hls.Events.ERROR, (_, data) => {
                         if (data.fatal) {
                             setIsLoading(false);
                             setError('Failed to load stream. Please try again.');
-                            console.error('HLS fatal error:', data);
                         }
                     });
-
-                    // Cleanup on unmount
-                    return () => {
-                        hls.destroy();
-                    };
+                    return () => hls.destroy();
                 } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    // Native HLS support (Safari)
                     video.src = videoSrc;
                     video.addEventListener('loadedmetadata', () => {
                         setIsLoading(false);
@@ -90,7 +77,6 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
                 setError('Failed to load video player.');
             });
         } else {
-            // Regular MP4 or other formats
             video.src = videoSrc;
             video.addEventListener('loadedmetadata', () => setIsLoading(false));
             video.addEventListener('error', () => {
@@ -101,10 +87,6 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
         }
     }, [showPlayer, videoSrc, isHLS]);
 
-    const handlePlay = () => {
-        setShowPlayer(true);
-    };
-
     const formatDuration = (minutes: number) => {
         const h = Math.floor(minutes / 60);
         const m = minutes % 60;
@@ -113,9 +95,8 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
 
     return (
         <div className="min-h-screen bg-[#0a0a0f] text-white">
-            {/* Hero / Player Section */}
+            {/* ── Hero / Player ─────────────────────────────────────── */}
             <div className="relative w-full bg-black" style={{ aspectRatio: '16/9', maxHeight: '75vh' }}>
-                {/* Back button - always visible */}
                 <button
                     onClick={() => router.back()}
                     className="absolute top-4 left-4 flex items-center gap-2 text-white/80 hover:text-white transition bg-black/40 backdrop-blur-sm px-3 py-2 rounded-lg z-20"
@@ -126,7 +107,6 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
                     Back
                 </button>
 
-                {/* Video Player - always in DOM once shown */}
                 <video
                     ref={videoRef}
                     controls
@@ -134,7 +114,6 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
                     playsInline
                 />
 
-                {/* Loading spinner */}
                 {showPlayer && isLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-10">
                         <div className="flex flex-col items-center gap-3">
@@ -144,7 +123,6 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
                     </div>
                 )}
 
-                {/* Error state */}
                 {error && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-10">
                         <div className="flex flex-col items-center gap-3 text-center px-4">
@@ -162,7 +140,6 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
                     </div>
                 )}
 
-                {/* Thumbnail with play button - shown before play */}
                 {!showPlayer && (
                     <div className="absolute inset-0">
                         {thumbnailSrc ? (
@@ -174,15 +151,10 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
                                 </svg>
                             </div>
                         )}
-
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
                         <div className="absolute inset-0 flex items-center justify-center">
                             {videoSrc ? (
-                                <button
-                                    onClick={handlePlay}
-                                    className="flex flex-col items-center gap-3 group"
-                                >
+                                <button onClick={() => setShowPlayer(true)} className="flex flex-col items-center gap-3 group">
                                     <div className="w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm border-2 border-white/50 flex items-center justify-center group-hover:bg-white/20 group-hover:scale-110 transition-all duration-300">
                                         <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M8 5v14l11-7z" />
@@ -207,7 +179,7 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
                 )}
             </div>
 
-            {/* Movie Details */}
+            {/* ── Movie Details ──────────────────────────────────────── */}
             <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
                 {/* Title Row */}
                 <div className="flex flex-col sm:flex-row sm:items-start gap-4 justify-between">
@@ -235,10 +207,9 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
                             )}
                         </div>
                     </div>
-
                     {videoSrc && !showPlayer && (
                         <button
-                            onClick={handlePlay}
+                            onClick={() => setShowPlayer(true)}
                             className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition shrink-0"
                         >
                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -258,7 +229,7 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
                     ))}
                 </div>
 
-                {/* Description */}
+                {/* Synopsis */}
                 <div className="space-y-2">
                     <h2 className="text-lg font-semibold text-white">Synopsis</h2>
                     <p className="text-slate-400 leading-relaxed">{movie.description}</p>
@@ -300,6 +271,11 @@ export default function MovieDetailClient({ movie }: { movie: Movie }) {
                         </div>
                     </div>
                 )}
+
+                {/* ── Reviews ─────────────────────────────────────────── */}
+                <div className="border-t border-slate-800 pt-8">
+                    <ReviewSection movieId={movie._id} />
+                </div>
             </div>
         </div>
     );

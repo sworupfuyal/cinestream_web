@@ -37,6 +37,27 @@ export const handleLogin = async (data: LoginType) => {
             await setAuthToken(response.token)
             await setUserData(response.data)
             
+            // ✅ Auto-trigger profile update to fetch profile_image from userprofile table
+            try {
+                const formData = new FormData();
+                formData.append('fullName', response.data.fullname || '');
+                formData.append('email', response.data.email || '');
+                
+                const profileUpdateResult = await updateProfile(formData, response.token);
+                
+                if (profileUpdateResult.success && profileUpdateResult.data) {
+                    // Merge profile data with user data
+                    const mergedData = {
+                        ...response.data,
+                        ...profileUpdateResult.data,
+                    };
+                    await setUserData(mergedData);
+                }
+            } catch (profileError) {
+                console.warn("Auto profile update skipped:", profileError);
+                // Continue anyway if profile update fails
+            }
+            
             // ✅ CRITICAL: Revalidate all paths to force re-fetch user data
             revalidatePath('/', 'layout');
             
