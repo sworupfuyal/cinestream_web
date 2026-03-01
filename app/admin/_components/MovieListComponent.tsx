@@ -95,14 +95,14 @@ export default function MovieList() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Movies</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white">Movies</h1>
                     <p className="text-gray-400 mt-1">Manage your movie collection</p>
                 </div>
                 <button
                     onClick={() => router.push('/admin/movies/create')}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold transition flex items-center gap-2 self-start sm:self-auto"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -111,8 +111,8 @@ export default function MovieList() {
                 </button>
             </div>
 
-                <div className="bg-slate-900 rounded-lg p-4">
-                <form onSubmit={handleSearch} className="flex gap-3">
+                <div className="bg-slate-900 rounded-lg p-3 sm:p-4">
+                <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <input
                         type="text"
                         value={searchInput}
@@ -149,11 +149,11 @@ export default function MovieList() {
                     </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                     {movies.map((movie) => (
                         <div key={movie._id} className="bg-slate-900 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition">
                             {/* Thumbnail */}
-                            <div className="relative h-80 bg-slate-800">
+                            <div className="relative h-56 sm:h-72 md:h-80 bg-slate-800">
                                 {movie.thumbnailUrl ? (
 
                                            <img

@@ -11,7 +11,7 @@ export default async function EditMoviePage({ params }: { params: Promise<{ id: 
     }
 
     return (
-        <div className="min-h-screen bg-slate-950 p-6">
+        <div className="min-h-screen bg-slate-950 p-4 sm:p-6">
             <EditMovieForm movie={response.data} />
         </div>
     );

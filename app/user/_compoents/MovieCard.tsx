@@ -77,7 +77,7 @@ export default function MovieCard({
             className="bg-slate-900 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition group cursor-pointer" // ✅ cursor-pointer
         >
             {/* Thumbnail */}
-            <div className="relative h-80 bg-slate-800">
+            <div className="relative h-56 sm:h-72 md:h-80 bg-slate-800">
                 {thumbnailSrc ? (
                     <img
                         src={thumbnailSrc}

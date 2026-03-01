@@ -127,17 +127,17 @@ export default function UserDashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 p-6">
-            <div className="max-w-7xl mx-auto space-y-6">
+        <div className="min-h-screen bg-slate-950 p-4 sm:p-6">
+            <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Browse Movies</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white">Browse Movies</h1>
                     <p className="text-gray-400 mt-1">Discover and add movies to your lists</p>
                 </div>
 
                 {/* Search */}
-                <div className="bg-slate-900 rounded-lg p-4">
-                    <form onSubmit={handleSearch} className="flex gap-3">
+                <div className="bg-slate-900 rounded-lg p-3 sm:p-4">
+                    <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                         <input
                             type="text"
                             value={searchInput}
@@ -168,7 +168,7 @@ export default function UserDashboard() {
                         <p className="text-gray-400 text-lg">No movies found</p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                         {movies.map((movie) => (
                             <MovieCard
                                 key={movie._id}

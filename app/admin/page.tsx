@@ -6,10 +6,10 @@ import UsersList from "./_components/UserList";
 export default function AdminDashboardPage() {
   return (
     <main className="min-h-screen bg-slate-950">
-      <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
 
         {/* Page Header */}
-        <header className="flex items-center justify-between">
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h1 className="text-3xl font-bold text-white tracking-tight">
               Dashboard

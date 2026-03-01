@@ -7,11 +7,11 @@ export default function UserLayout({
 }) {
   return (
     <div className="flex h-screen bg-slate-950">
-      {/* Sidebar */}
+      {/* Sidebar (handles its own mobile toggle) */}
       <UserSidebar />
       
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto min-w-0">
         {children}
       </main>
     </div>

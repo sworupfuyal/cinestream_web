@@ -21,9 +21,24 @@ export default function UserSidebar() {
   const { user } = useAuth();
   const [counts, setCounts] = useState({ favorites: 0, watchLater: 0 });
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetchCounts();
+  }, []);
+
+  // Close sidebar on route change
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
+  // Close sidebar on escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSidebarOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const fetchCounts = async () => {
@@ -90,22 +105,43 @@ export default function UserSidebar() {
 
   return (
     <>
+      {/* Mobile Toggle Button */}
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="md:hidden fixed top-3 left-3 z-50 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-700 bg-slate-900 hover:bg-slate-800 transition"
+        aria-label="Open sidebar"
+      >
+        <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       <aside
-        className="
-          fixed md:static
-          top-0 left-0
+        className={`
+          fixed top-0 left-0
           h-screen w-64
           bg-slate-950
           border-r border-gray-800
-          z-40
+          z-50
           overflow-y-auto
           flex flex-col
-        "
+          transition-transform duration-300 ease-in-out
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0 md:static md:z-auto md:shrink-0
+        `}
       >
      {/* Brand */}
 
 {/* Brand */}
-<div className="p-4 border-b border-gray-800">
+<div className="p-4 border-b border-gray-800 flex items-center justify-between">
   <Link href="/user/dashboard" className="flex items-center gap-3">
     <div className="h-9 w-9 rounded-lg overflow-hidden flex items-center justify-center">
       <Image 
@@ -118,6 +154,15 @@ export default function UserSidebar() {
     </div>
     <span className="font-semibold text-white tracking-wide">Cinestream</span>
   </Link>
+  <button
+    onClick={() => setSidebarOpen(false)}
+    className="md:hidden text-gray-400 hover:text-white transition"
+    aria-label="Close sidebar"
+  >
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    </svg>
+  </button>
 </div>
 
         {/* User Info */}

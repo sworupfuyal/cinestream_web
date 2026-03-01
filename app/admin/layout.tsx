@@ -7,13 +7,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-slate-950">
 
-      {/* Sidebar */}
-      <aside className="hidden xl:block">
-        <Sidebar />
-      </aside>
+      {/* Sidebar (handles its own mobile toggle) */}
+      <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 min-w-0">
 
         {/* Top Header */}
         <Header />
@@ -23,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="
             flex-1
             w-full
-            px-6 py-6
+            px-4 sm:px-6 py-4 sm:py-6
             max-w-7xl
             mx-auto
           "
@@ -33,7 +31,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       </div>
 
-      {/* 🔔 Toasts (global for admin) */}
+      {/* Toasts (global for admin) */}
       <ToastContainer
         position="top-right"
         autoClose={3000}

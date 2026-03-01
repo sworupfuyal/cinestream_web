@@ -90,14 +90,14 @@ export default function UsersList() {
     return (
         <>
             <div className="bg-slate-900 rounded-xl shadow-2xl overflow-hidden">
-                <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+                <div className="p-4 sm:p-6 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
-                        <h2 className="text-2xl font-bold text-white">All Users</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold text-white">All Users</h2>
                         <p className="text-gray-400 mt-1">Total: {users.length} users</p>
                     </div>
                     <button
                         onClick={() => router.push('/admin/users/create')}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 self-start sm:self-auto"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

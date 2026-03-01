@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #020617;
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -12,15 +12,198 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #F5F5F5;
-    --foreground: #333333;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT THEME OVERRIDES
+   Applied via data-theme="light" on <html>
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Root variables in light mode ────────────────────────── */
+[data-theme="light"] {
+  --background: #ffffff;
+  --foreground: #0f172a;
+}
+
+/* ─── Page / section backgrounds ──────────────────────────── */
+[data-theme="light"] .bg-slate-950 {
+  background-color: #ffffff !important;
+}
+[data-theme="light"] .bg-slate-900 {
+  background-color: #f8fafc !important;
+}
+[data-theme="light"] .bg-slate-800 {
+  background-color: #f1f5f9 !important;
+}
+[data-theme="light"] .bg-black {
+  background-color: #ffffff !important;
+}
+[data-theme="light"] .bg-\[\#020617\] {
+  background-color: #f0f4ff !important;
+}
+[data-theme="light"] .bg-\[\#0a0a0f\] {
+  background-color: #f8fafc !important;
+}
+
+/* ─── Hover backgrounds ───────────────────────────────────── */
+[data-theme="light"] .hover\:bg-slate-800:hover {
+  background-color: #e2e8f0 !important;
+}
+[data-theme="light"] .hover\:bg-slate-900:hover {
+  background-color: #e2e8f0 !important;
+}
+[data-theme="light"] .hover\:bg-slate-800:hover {
+  background-color: #e2e8f0 !important;
+}
+[data-theme="light"] .hover\:bg-slate-700:hover {
+  background-color: #e2e8f0 !important;
+}
+[data-theme="light"] .hover\:bg-slate-600:hover {
+  background-color: #cbd5e1 !important;
+}
+[data-theme="light"] .hover\:bg-white\/10:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+[data-theme="light"] .hover\:bg-white\/5:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+[data-theme="light"] .hover\:bg-red-900\/20:hover {
+  background-color: rgba(239, 68, 68, 0.08) !important;
+}
+
+/* ─── Navbar semi-transparent ─────────────────────────────── */
+[data-theme="light"] .bg-black\/80 {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* ─── bg-slate-700 (secondary buttons, loading skeletons) ── */
+[data-theme="light"] .bg-slate-700 {
+  background-color: #e2e8f0 !important;
+}
+
+/* ─── Keep modal / sidebar overlays dark ──────────────────── */
+/* bg-black/50, bg-black/60 intentionally NOT overridden */
+
+/* ─── Text colors ─────────────────────────────────────────── */
+[data-theme="light"] .text-white {
+  color: #0f172a !important;
+}
+[data-theme="light"] .text-gray-400 {
+  color: #64748b !important;
+}
+[data-theme="light"] .text-gray-300 {
+  color: #475569 !important;
+}
+[data-theme="light"] .text-gray-500 {
+  color: #64748b !important;
+}
+
+/* Hover text */
+[data-theme="light"] .hover\:text-white:hover {
+  color: #0f172a !important;
+}
+
+/* ─── Restore white text inside colored containers ────────── */
+/* Buttons & badges with colored backgrounds */
+[data-theme="light"] .bg-blue-600.text-white,
+[data-theme="light"] .bg-blue-700.text-white,
+[data-theme="light"] .bg-red-600.text-white,
+[data-theme="light"] .bg-red-700.text-white,
+[data-theme="light"] .bg-green-600.text-white,
+[data-theme="light"] .bg-purple-600.text-white,
+[data-theme="light"] .bg-orange-600.text-white,
+[data-theme="light"] .hover\:bg-blue-700.text-white,
+[data-theme="light"] .hover\:bg-red-700.text-white {
+  color: #ffffff !important;
+}
+/* Gradient stat / feature cards */
+[data-theme="light"] [class*="from-blue-6"] .text-white,
+[data-theme="light"] [class*="from-green-6"] .text-white,
+[data-theme="light"] [class*="from-purple-6"] .text-white,
+[data-theme="light"] [class*="from-orange-6"] .text-white {
+  color: #ffffff !important;
+}
+[data-theme="light"] [class*="from-blue-6"] .text-blue-100,
+[data-theme="light"] [class*="from-green-6"] .text-green-100,
+[data-theme="light"] [class*="from-purple-6"] .text-purple-100 {
+  color: unset;
+}
+/* Play button overlays (white/opacity on imagery) */
+[data-theme="light"] .bg-white\/20 .text-white,
+[data-theme="light"] .bg-white\/10 .text-white,
+[data-theme="light"] [class*="border-white"] .text-white {
+  color: #ffffff !important;
+}
+
+/* ─── Borders ─────────────────────────────────────────────── */
+[data-theme="light"] .border-gray-800 {
+  border-color: #e2e8f0 !important;
+}
+[data-theme="light"] .border-gray-700 {
+  border-color: #cbd5e1 !important;
+}
+[data-theme="light"] .border-slate-800 {
+  border-color: #e2e8f0 !important;
+}
+[data-theme="light"] .border-slate-700 {
+  border-color: #cbd5e1 !important;
+}
+
+/* ─── Divide ──────────────────────────────────────────────── */
+[data-theme="light"] .divide-slate-800 > * + * {
+  border-color: #e2e8f0 !important;
+}
+
+/* ─── Gradient overrides (hero / page backgrounds) ────────── */
+[data-theme="light"] .from-black {
+  --tw-gradient-from: #ffffff !important;
+}
+[data-theme="light"] .via-\[\#020617\] {
+  --tw-gradient-via: #f0f4ff !important;
+}
+[data-theme="light"] .to-black {
+  --tw-gradient-to: #ffffff !important;
+}
+
+/* ─── Radial glow on hero ─────────────────────────────────── */
+[data-theme="light"] .bg-\[radial-gradient\(circle_at_top\2c _rgba\(239\2c 68\2c 68\2c 0\.15\)\2c _transparent_60\%\)\] {
+  background: radial-gradient(circle at top, rgba(59, 130, 246, 0.08), transparent 60%) !important;
+}
+
+/* ─── Input placeholders ──────────────────────────────────── */
+[data-theme="light"] .placeholder-gray-500::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* ─── Ring / focus colors ─────────────────────────────────── */
+[data-theme="light"] .ring-gray-800 {
+  --tw-ring-color: #e2e8f0 !important;
+}
+
+/* ─── Scrollbar (webkit) ──────────────────────────────────── */
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ─── Shadow softening ────────────────────────────────────── */
+[data-theme="light"] .shadow-2xl,
+[data-theme="light"] .shadow-xl {
+  --tw-shadow-color: rgba(0, 0, 0, 0.06);
+}
+
+/* ─── Toast overrides (react-toastify) ────────────────────── */
+[data-theme="light"] .Toastify__toast--default {
+  background: #ffffff !important;
+  color: #0f172a !important;
 }

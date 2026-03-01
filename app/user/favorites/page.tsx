@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { handleGetUserLists, handleRemoveFromList } from "@/lib/actions/user-list-actions";
 import { toast } from "react-toastify";
 import { API_BASE_URL } from "@/lib/constants";
+import Link from "next/link";
 
 interface Movie {
     _id: string;
@@ -62,11 +63,11 @@ export default function FavoritesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 p-6">
-            <div className="max-w-7xl mx-auto space-y-6">
+        <div className="min-h-screen bg-slate-950 p-4 sm:p-6">
+            <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="text-3xl font-bold text-white">My Favorites</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white">My Favorites</h1>
                     <p className="text-gray-400 mt-1">
                         {favorites.length} {favorites.length === 1 ? 'movie' : 'movies'} in your favorites
                     </p>
@@ -93,11 +94,12 @@ export default function FavoritesPage() {
                         </a>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                         {favorites.map((item) => (
                             <div key={item.listId} className="bg-slate-900 rounded-lg overflow-hidden hover:ring-2 hover:ring-red-500 transition">
                                 {/* Thumbnail */}
-                                <div className="relative h-80 bg-slate-800">
+                                <Link href={`/user/movies/${item.movie._id}`} className="block">
+                                <div className="relative h-56 sm:h-72 md:h-80 bg-slate-800">
                                     {item.movie.thumbnailUrl ? (
                                         <img
                                             src={item.movie.thumbnailUrl?.startsWith('http')
@@ -123,9 +125,13 @@ export default function FavoritesPage() {
                                     </div>
                                 </div>
 
+                                </Link>
+
                                 {/* Content */}
                                 <div className="p-4">
-                                    <h3 className="text-lg font-bold text-white mb-1 truncate">{item.movie.title}</h3>
+                                    <Link href={`/user/movies/${item.movie._id}`}>
+                                        <h3 className="text-lg font-bold text-white mb-1 truncate hover:text-blue-400 transition cursor-pointer">{item.movie.title}</h3>
+                                    </Link>
                                     <p className="text-sm text-gray-400 mb-2">{item.movie.director} • {item.movie.releaseYear}</p>
 
                                     <div className="flex items-center gap-2 mb-3">
