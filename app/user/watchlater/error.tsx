@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export default function AdminUsersError({
+export default function WatchLaterError({
     error,
     reset,
 }: {
@@ -21,9 +21,9 @@ export default function AdminUsersError({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <h2 className="text-xl font-bold text-white mb-2">Failed to load users</h2>
+                <h2 className="text-xl font-bold text-white mb-2">Failed to load watch later</h2>
                 <p className="text-gray-400 text-sm mb-6">
-                    {error.message || "An unexpected error occurred while loading users."}
+                    {error.message || "An unexpected error occurred."}
                 </p>
                 <button
                     onClick={reset}

@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import { handleGetAllMovies, handleDeleteMovie } from "@/lib/actions/admin/movie-action";
+import { useEffect, useState, useMemo } from "react";
+import { handleGetAllMovies, handleDeleteMovie, handleGetAllGenres } from "@/lib/actions/admin/movie-action";
 import { toast } from "react-toastify";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { API_BASE_URL } from "@/lib/constants";
@@ -15,6 +15,8 @@ interface Movie {
     thumbnailUrl?: string;
 }
 
+type SortOption = "default" | "title-asc" | "title-desc" | "year-desc" | "year-asc" | "duration-asc" | "duration-desc";
+
 export default function MovieList() {
     const router = useRouter();
     const pathname = usePathname();
@@ -22,21 +24,38 @@ export default function MovieList() {
 
     // Read initial state from URL
     const [movies, setMovies] = useState<Movie[]>([]);
+    const [genres, setGenres] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(1);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+    const [sortBy, setSortBy] = useState<SortOption>("default");
 
     const page = Number(searchParams.get("page") || "1");
     const search = searchParams.get("search") || "";
+    const genre = searchParams.get("genre") || "";
     const [searchInput, setSearchInput] = useState(search);
 
     // Helper to update URL params
-    const updateURL = (newPage: number, newSearch: string) => {
+    const updateURL = (newPage: number, newSearch: string, newGenre?: string) => {
         const params = new URLSearchParams();
         if (newPage > 1) params.set("page", String(newPage));
         if (newSearch) params.set("search", newSearch);
+        const g = newGenre !== undefined ? newGenre : genre;
+        if (g) params.set("genre", g);
         router.push(`${pathname}?${params.toString()}`);
     };
+
+    /** Fetch genre list once */
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await handleGetAllGenres();
+                if (res.success && Array.isArray(res.data)) {
+                    setGenres(res.data);
+                }
+            } catch { /* ignore */ }
+        })();
+    }, []);
 
    const fetchMovies = async () => {
     setLoading(true);
@@ -45,6 +64,7 @@ export default function MovieList() {
             page,
             limit: 12,
             search: search || undefined,
+            genre: genre || undefined,
         });
 
         if (response.success) {
@@ -67,11 +87,39 @@ export default function MovieList() {
         setLoading(false);
     }
 };
+
+    /** Client-side sorted movies */
+    const sortedMovies = useMemo(() => {
+        if (sortBy === "default") return movies;
+        const sorted = [...movies];
+        switch (sortBy) {
+            case "title-asc":
+                sorted.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case "title-desc":
+                sorted.sort((a, b) => b.title.localeCompare(a.title));
+                break;
+            case "year-desc":
+                sorted.sort((a, b) => b.releaseYear - a.releaseYear);
+                break;
+            case "year-asc":
+                sorted.sort((a, b) => a.releaseYear - b.releaseYear);
+                break;
+            case "duration-asc":
+                sorted.sort((a, b) => a.duration - b.duration);
+                break;
+            case "duration-desc":
+                sorted.sort((a, b) => b.duration - a.duration);
+                break;
+        }
+        return sorted;
+    }, [movies, sortBy]);
+
     // Fetch whenever URL params change
     useEffect(() => {
         setSearchInput(search); // keep input in sync if user navigates back/forward
         fetchMovies();
-    }, [page, search]);
+    }, [page, search, genre]);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -111,7 +159,8 @@ export default function MovieList() {
                 </button>
             </div>
 
-                <div className="bg-slate-900 rounded-lg p-3 sm:p-4">
+                <div className="bg-slate-900 rounded-lg p-3 sm:p-4 space-y-3">
+                {/* Search row */}
                 <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                     <input
                         type="text"
@@ -127,6 +176,50 @@ export default function MovieList() {
                         Search
                     </button>
                 </form>
+
+                {/* Filter / Sort row */}
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    {/* Genre filter */}
+                    <select
+                        value={genre}
+                        onChange={(e) => updateURL(1, search, e.target.value)}
+                        className="flex-1 rounded-lg bg-slate-800 border border-gray-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="">All Genres</option>
+                        {genres.map((g) => (
+                            <option key={g} value={g}>{g}</option>
+                        ))}
+                    </select>
+
+                    {/* Sort */}
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as SortOption)}
+                        className="flex-1 rounded-lg bg-slate-800 border border-gray-700 px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="default">Sort By: Default</option>
+                        <option value="title-asc">Title (A → Z)</option>
+                        <option value="title-desc">Title (Z → A)</option>
+                        <option value="year-desc">Year (Newest)</option>
+                        <option value="year-asc">Year (Oldest)</option>
+                        <option value="duration-asc">Duration (Short → Long)</option>
+                        <option value="duration-desc">Duration (Long → Short)</option>
+                    </select>
+
+                    {/* Clear filters */}
+                    {(genre || search || sortBy !== "default") && (
+                        <button
+                            onClick={() => {
+                                setSortBy("default");
+                                setSearchInput("");
+                                updateURL(1, "", "");
+                            }}
+                            className="px-4 py-2 rounded-lg border border-gray-700 text-sm text-gray-400 hover:text-white hover:bg-slate-800 transition"
+                        >
+                            Clear
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Movie Grid */}
@@ -150,7 +243,7 @@ export default function MovieList() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                    {movies.map((movie) => (
+                    {sortedMovies.map((movie) => (
                         <div key={movie._id} className="bg-slate-900 rounded-lg overflow-hidden hover:ring-2 hover:ring-blue-500 transition">
                             {/* Thumbnail */}
                             <div className="relative h-56 sm:h-72 md:h-80 bg-slate-800">
