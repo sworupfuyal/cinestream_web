@@ -135,4 +135,31 @@ describe('MovieSchema', () => {
         });
         expect(result.success).toBe(false);
     });
+
+    // Test 43
+    it('should reject negative duration', () => {
+        const result = MovieSchema.safeParse({
+            ...validMovie,
+            duration: -10,
+        });
+        expect(result.success).toBe(false);
+    });
+
+    // Test 44
+    it('should accept movie with duration of 1 minute', () => {
+        const result = MovieSchema.safeParse({
+            ...validMovie,
+            duration: 1,
+        });
+        expect(result.success).toBe(true);
+    });
+
+    // Test 45
+    it('should reject title exceeding 200 characters', () => {
+        const result = MovieSchema.safeParse({
+            ...validMovie,
+            title: 'A'.repeat(201),
+        });
+        expect(result.success).toBe(false);
+    });
 });

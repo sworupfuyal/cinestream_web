@@ -32,4 +32,52 @@ describe('Admin UserSchema', () => {
         });
         expect(result.success).toBe(false);
     });
+
+    // Test 51
+    it('should reject invalid email format', () => {
+        const result = UserSchema.safeParse({
+            ...validUser,
+            email: 'not-an-email',
+        });
+        expect(result.success).toBe(false);
+    });
+
+    // Test 52
+    it('should reject password shorter than 6 characters', () => {
+        const result = UserSchema.safeParse({
+            ...validUser,
+            password: '12345',
+            confirmPassword: '12345',
+        });
+        expect(result.success).toBe(false);
+    });
+
+    // Test 53
+    it('should accept user with empty optional fullname omitted', () => {
+        const result = UserSchema.safeParse({
+            email: 'user@cinestream.com',
+            password: 'strongPass1',
+            confirmPassword: 'strongPass1',
+        });
+        expect(result.success).toBe(true);
+    });
+
+    // Test 54
+    it('should reject empty email', () => {
+        const result = UserSchema.safeParse({
+            ...validUser,
+            email: '',
+        });
+        expect(result.success).toBe(false);
+    });
+
+    // Test 55
+    it('should reject empty password', () => {
+        const result = UserSchema.safeParse({
+            ...validUser,
+            password: '',
+            confirmPassword: '',
+        });
+        expect(result.success).toBe(false);
+    });
 });

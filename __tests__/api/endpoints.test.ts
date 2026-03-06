@@ -48,4 +48,91 @@ describe('API Endpoints', () => {
             expect(API.PUBLIC.MOVIES.GET(id)).toBe(`/api/movies/${id}`);
         });
     });
+
+    describe('AUTH additional endpoints', () => {
+        // Test 26
+        it('should have correct whoami endpoint', () => {
+            expect(API.AUTH.WHOAMI).toBe('/api/auth/whoami');
+        });
+
+        // Test 27
+        it('should have correct update profile endpoint', () => {
+            expect(API.AUTH.UPDATEPROFILE).toBe('/api/auth/update-profile');
+        });
+
+        // Test 28
+        it('should have correct request password reset endpoint', () => {
+            expect(API.AUTH.REQUEST_PASSWORD_RESET).toBe('/api/auth/request-password-reset');
+        });
+    });
+
+    describe('ADMIN USER endpoints', () => {
+        // Test 29
+        it('should have correct admin user create endpoint', () => {
+            expect(API.ADMIN.USER.CREATE).toBe('/api/admin/users');
+        });
+
+        // Test 30
+        it('should have correct admin user list endpoint', () => {
+            expect(API.ADMIN.USER.LIST).toBe('/api/admin/users');
+        });
+
+        // Test 31
+        it('should have correct admin user delete endpoint', () => {
+            expect(API.ADMIN.USER.DELETE).toBe('/api/admin/users');
+        });
+    });
+
+    describe('ADMIN MOVIES additional endpoints', () => {
+        // Test 32
+        it('should have correct admin movies create endpoint', () => {
+            expect(API.ADMIN.MOVIES.CREATE).toBe('/api/admin/movies');
+        });
+
+        // Test 33
+        it('should have correct admin movies list endpoint', () => {
+            expect(API.ADMIN.MOVIES.LIST).toBe('/api/admin/movies');
+        });
+
+        // Test 34
+        it('should generate correct admin movie UPDATE URL with id', () => {
+            const id = 'update456';
+            expect(API.ADMIN.MOVIES.UPDATE(id)).toBe('/api/admin/movies/update456');
+        });
+
+        // Test 35
+        it('should generate correct admin movie DELETE URL with id', () => {
+            const id = 'del789';
+            expect(API.ADMIN.MOVIES.DELETE(id)).toBe('/api/admin/movies/del789');
+        });
+    });
+
+    describe('USER LISTS additional endpoints', () => {
+        // Test 36
+        it('should have correct user lists add endpoint', () => {
+            expect(API.USER.LISTS.ADD).toBe('/api/user/lists');
+        });
+
+        // Test 37
+        it('should have correct user lists get endpoint', () => {
+            expect(API.USER.LISTS.GET).toBe('/api/user/lists');
+        });
+
+        // Test 38
+        it('should have correct user lists status endpoint', () => {
+            expect(API.USER.LISTS.STATUS).toBe('/api/user/lists/status');
+        });
+
+        // Test 39
+        it('should have correct user lists counts endpoint', () => {
+            expect(API.USER.LISTS.COUNTS).toBe('/api/user/lists/counts');
+        });
+
+        // Test 40
+        it('should generate correct remove URL with watchlater listType', () => {
+            const movieId = 'movie999';
+            const listType = 'watchlater';
+            expect(API.USER.LISTS.REMOVE(movieId, listType)).toBe('/api/user/lists/movie999/watchlater');
+        });
+    });
 });

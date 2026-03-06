@@ -82,4 +82,51 @@ describe('resetPasswordSchema', () => {
         });
         expect(result.success).toBe(false);
     });
+
+    // Test 46
+    it('should accept password with exactly 6 characters', () => {
+        const result = resetPasswordSchema.safeParse({
+            newPassword: '123456',
+            confirmNewPassword: '123456',
+        });
+        expect(result.success).toBe(true);
+    });
+
+    // Test 47
+    it('should reject empty new password', () => {
+        const result = resetPasswordSchema.safeParse({
+            newPassword: '',
+            confirmNewPassword: '',
+        });
+        expect(result.success).toBe(false);
+    });
+});
+
+describe('updateUserSchema edge cases', () => {
+    // Test 48
+    it('should accept fullname with exactly 2 characters', () => {
+        const result = updateUserSchema.safeParse({
+            fullname: 'Jo',
+            email: 'test@example.com',
+        });
+        expect(result.success).toBe(true);
+    });
+
+    // Test 49
+    it('should accept fullname with exactly 50 characters', () => {
+        const result = updateUserSchema.safeParse({
+            fullname: 'A'.repeat(50),
+            email: 'test@example.com',
+        });
+        expect(result.success).toBe(true);
+    });
+
+    // Test 50
+    it('should reject empty fullname', () => {
+        const result = updateUserSchema.safeParse({
+            fullname: '',
+            email: 'test@example.com',
+        });
+        expect(result.success).toBe(false);
+    });
 });

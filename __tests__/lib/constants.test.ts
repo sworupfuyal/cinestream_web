@@ -24,4 +24,18 @@ describe('API_BASE_URL constant', () => {
         const { API_BASE_URL } = require('@/lib/constants');
         expect(API_BASE_URL).toBe('https://api.cinestream.com');
     });
+
+    // Test 41
+    it('should return a string value', () => {
+        delete process.env.NEXT_PUBLIC_API_BASE_URL;
+        const { API_BASE_URL } = require('@/lib/constants');
+        expect(typeof API_BASE_URL).toBe('string');
+    });
+
+    // Test 42
+    it('should contain a valid URL protocol', () => {
+        delete process.env.NEXT_PUBLIC_API_BASE_URL;
+        const { API_BASE_URL } = require('@/lib/constants');
+        expect(API_BASE_URL).toMatch(/^https?:\/\//);
+    });
 });
